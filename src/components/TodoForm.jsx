@@ -2,36 +2,61 @@ import { useState } from "react";
 
 function TodoForm({ onAddTodo }) {
   const [task, setTask] = useState("");
+  const [error, setError] = useState("");
+
+  const handleChange = (event) => {
+    setTask(event.target.value);
+    if (error) {
+      setError("");
+    }
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    if (!task.trim()) {
+    const trimmedTask = task.trim();
+    if (!trimmedTask) {
+      setError("Task cannot be empty.");
       return;
     }
+    const validTaskPattern = /^[a-zA-Z0-9\s.,!?'-]+$/;
 
-    onAddTodo(task);
+    if (!validTaskPattern.test(trimmedTask)) {
+      setError(
+        "Task contains invalid special characters."
+      );
+      return;
+    }
+    onAddTodo(trimmedTask);
     setTask("");
+    setError("");
   };
 
   return (
     <form
-      className="todo-form"
+      className="todo-form-wrapper"
       onSubmit={handleSubmit}
     >
-      <input
-        type="text"
-        value={task}
-        onChange={(event) =>
-          setTask(event.target.value)
-        }
-        placeholder="What needs to be done?"
-        aria-label="New task"
-      />
+      <div className="todo-form">
+        <input
+          type="text"
+          value={task}
+          onChange={handleChange}
+          placeholder="What needs to be done?"
+          aria-label="New task"
+          className={error ? "input-error" : ""}
+        />
 
-      <button type="submit">
-        Add Task
-      </button>
+        <button type="submit">
+          Add Task
+        </button>
+      </div>
+
+      {error && (
+        <p className="validation-error">
+          {error}
+        </p>
+      )}
     </form>
   );
 }

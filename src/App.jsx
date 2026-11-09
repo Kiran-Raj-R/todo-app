@@ -9,6 +9,13 @@ function App() {
   const [filter, setFilter] = useState("all");
 
   const addTodo = (text) => {
+    const trimmedText = text.trim();
+    const alreadyExists = todos.some((todo) => todo.text.toLowerCase() === trimmedText.toLowerCase());
+    if (alreadyExists) {
+      return;
+    }
+
+    
     const newTodo = {
       id: Date.now(),
       text: text.trim(),
@@ -24,14 +31,8 @@ function App() {
   const toggleTodo = (id) => {
     setTodos((previousTodos) =>
       previousTodos.map((todo) =>
-        todo.id === id
-          ? {
-              ...todo,
-              completed: !todo.completed,
-            }
-          : todo
-      )
-    );
+        todo.id === id? {...todo, completed: !todo.completed,}: todo
+      ));
   };
 
   const editTodo = (id, newText) => {
@@ -48,6 +49,10 @@ function App() {
   };
 
   const deleteTodo = (id) => {
+  const confirmed = window.confirm("Are you sure you want to delete this task?");
+    if (!confirmed) {
+      return;
+    }
     setTodos((previousTodos) =>
       previousTodos.filter((todo) => todo.id !== id)
     );
@@ -68,6 +73,8 @@ function App() {
   const activeCount = todos.filter(
     (todo) => !todo.completed
   ).length;
+
+  
 
   return (
     <div className="app">
